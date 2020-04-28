@@ -2,7 +2,8 @@
 
 Esse é um projeto de estudo usando o Flutter para desenvolvimento de uma agenda de contatos
 
-## Getting Started
+
+<!-- ## Getting Started -->
 
 <!-- This project is a starting point for a Flutter application. -->
 

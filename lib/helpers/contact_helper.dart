@@ -95,12 +95,17 @@ class ContactHelper {
 
 }
 
+/*
+ * Model  
+ */
 class Contact {
   int id;
   String name;
   String email;
   String phone;
   String img;
+
+  Contact();
 
   Contact.fromMap(Map contactMap) {
     id = contactMap[idColumn];
@@ -110,7 +115,7 @@ class Contact {
     img = contactMap[imgColoumn];
   }
 
-  Map toMap() {
+  Map<String, dynamic> toMap() {
     Map contactMap = {
       nameColumn: name,
       emailColumn: email,
@@ -122,7 +127,8 @@ class Contact {
       contactMap[idColumn] = id;
     }
 
-    return contactMap;
+    //_InternalLinkedHashMap<dynamic, dynamic>
+    return Map<String, dynamic>.from(contactMap);
   }
 
   @override
