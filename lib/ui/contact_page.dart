@@ -20,6 +20,7 @@ class ContactPage extends StatefulWidget {
 class _ContactPage extends State<ContactPage> {
 
   Contact _editContact;
+  bool _contactEdited = false;
 
   TextEditingController _nameController = TextEditingController();
   TextEditingController _phoneController = TextEditingController();
@@ -46,6 +47,7 @@ class _ContactPage extends State<ContactPage> {
   }
 
   _handleName(String text) {
+    _contactEdited = true;
     setState(() {
       _editContact.name = text;
     });
@@ -56,7 +58,33 @@ class _ContactPage extends State<ContactPage> {
   }
 
   Future<bool> _requestPop() {
+    if (_contactEdited) {
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          title: Text('Descartar alterações?'),
+          content: Text('Se sair as alterações serão perdidas'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text("Cancelar"),
+              onPressed: (){
+                Navigator.pop(context);
+              }
+            ),
+            FlatButton(
+              child: Text("Sim"),
+              onPressed: (){
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      });
+      return Future.value(false);
     
+    } else {
+      return Future.value(true);
+    }
   }
 
   @override
@@ -99,7 +127,10 @@ class _ContactPage extends State<ContactPage> {
                 keyboardType: TextInputType.phone,
                 controller: _phoneController,
                 focusNode: _phoneFocusNode,
-                onChanged: (text) => _editContact.phone = text,
+                onChanged: (text) {
+                  _editContact.phone = text;
+                  _contactEdited = true;
+                },
                 onSubmitted: (v) => FocusScope.of(context).requestFocus(_emailFocusNode),
               ),
               TextField(
@@ -107,7 +138,10 @@ class _ContactPage extends State<ContactPage> {
                 keyboardType: TextInputType.emailAddress,
                 controller: _emailController,
                 focusNode: _emailFocusNode,
-                onChanged: (text) => _editContact.email = text,
+                onChanged: (text) {
+                  _editContact.email = text;
+                  _contactEdited = true;
+                },
                 onSubmitted: (v) => _handleSave(),
               )
             ],

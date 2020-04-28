@@ -37,6 +37,7 @@ class ContactHelper {
   }
 
   Future<Contact> saveContact(Contact contact) async {
+    if (contact == null) return null;
     Database dbContact = await db;
     contact.id = await dbContact.insert(contactTable, contact.toMap());
     return contact;
@@ -64,6 +65,7 @@ class ContactHelper {
   }
 
   Future<int> updateContact(Contact contact) async {
+    if (contact == null) return -1;
     Database dbContact = await db;
     return await dbContact.update(
       contactTable, 
