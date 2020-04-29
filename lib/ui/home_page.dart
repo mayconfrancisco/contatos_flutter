@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:contatos_flutter/helpers/contact_helper.dart';
 import 'package:contatos_flutter/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -76,7 +77,7 @@ class _HomePageState extends State<HomePage> {
    */
   Widget _buildCardContact(context, index) {
     return GestureDetector(
-      onTap: () => _showContactPage(contact: contactsList[index]),
+      onTap: () => _showOptions(context, index),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -87,6 +88,7 @@ class _HomePageState extends State<HomePage> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
+                  fit: BoxFit.cover,
                   image: contactsList[index].img != null 
                     ? FileImage(File(contactsList[index].img))
                     : AssetImage('images/person.png'))
@@ -105,14 +107,79 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                 ),
-                Text(contactsList[index].email),
+                Text(contactsList[index].email ?? "-"),
                 Container(height: 4,),
-                Text(contactsList[index].phone)
+                Text(contactsList[index].phone ?? "-")
               ],
             )
           ]),
         ),
       ),
+    );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context, 
+      builder: (context) {
+        return BottomSheet(
+          onClosing: () {}, 
+          builder: (context) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  
+                  FlatButton(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Ligar',
+                      style: TextStyle(color: Colors.red, fontSize: 20),
+                    ),
+                    onPressed: () async {
+                      String urlTel = 'tel:${contactsList[index].phone}';
+                      if (await canLaunch(urlTel)) {
+                        await launch(urlTel);
+                      } else {
+                        print('deu ruim, não tem acesso para chamada');
+                      }
+                      Navigator.pop(context);
+                    },
+                  ),
+                  
+                  FlatButton(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Editar',
+                      style: TextStyle(color: Colors.red, fontSize: 20),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _showContactPage(contact: contactsList[index]);
+                    }, 
+                  ),
+                  
+                  FlatButton(
+                    padding: EdgeInsets.all(8),
+                    child: Text(
+                      'Excluir',
+                      style: TextStyle(color: Colors.red, fontSize: 20),
+                    ),
+                    onPressed: () async {
+                      helper.deleteContact(contactsList[index].id);
+                      setState(() {
+                        contactsList.removeAt(index);
+                        Navigator.pop(context);
+                      });
+                    }, 
+                  ),
+                ],
+              ),
+            );
+          }
+        );
+      }
     );
   }
 
